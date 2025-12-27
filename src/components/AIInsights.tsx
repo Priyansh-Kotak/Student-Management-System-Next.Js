@@ -1,12 +1,21 @@
 'use client'
 
+import { Button } from '@/components/ui/Button'
+import { Loader2, Sparkles } from 'lucide-react'
 import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 
 export function AIInsights() {
+  // state to store generated report
   const [report, setReport] = useState('')
+
+  // state to control loading spinner
   const [loading, setLoading] = useState(false)
+
+  // state to store error message
   const [error, setError] = useState('')
 
+  // function to call backend API and generate report
   const generateReport = async () => {
     setLoading(true)
     setError('')
@@ -19,67 +28,87 @@ export function AIInsights() {
 
       const data = await response.json()
 
+      // handle API error response
       if (!response.ok) {
         setError(data.error || 'Failed to generate report')
         return
-        }
+      }
 
-  setReport(data.report)
-} catch (err) {
-  setError('An error occurred while generating the report')
-} finally {
-  setLoading(false)
-}}}
+      // set generated report
+      setReport(data.report)
+    } catch (err) {
+      // handle unexpected errors
+      setError('An error occurred while generating the report')
+    } finally {
+      // stop loading spinner
+      setLoading(false)
+    }
+  }
 
-return (
-<Card>
-<CardHeader>
-<CardTitle className="flex items-center gap-2">
-<Sparkles className="text-yellow-500" />
-AI-Powered Insights
-</CardTitle>
-</CardHeader>
-<CardContent>
-{!report && !loading && (
-<div className="text-center py-8">
-<p className="text-gray-600 mb-4">
-Generate an AI-powered analysis of your student data
-</p>
-<Button onClick={generateReport} className="flex items-center gap-2">
-<Sparkles size={20} />
-Generate Report
-</Button>
-</div>
-)}
+  // JSX must be returned INSIDE the component
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="text-yellow-500" />
+          AI-Powered Insights
+        </CardTitle>
+      </CardHeader>
 
-{loading && (
-      <div className="text-center py-8">
-        <Loader2 className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
-        <p className="text-gray-600">Analyzing your student data...</p>
-      </div>
-    )}
+      <CardContent>
+        {/* Initial state */}
+        {!report && !loading && (
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">
+              Generate an AI-powered analysis of your student data
+            </p>
+            <Button onClick={generateReport} className="flex items-center gap-2">
+              <Sparkles size={20} />
+              Generate Report
+            </Button>
+          </div>
+        )}
 
-    {error && (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        {error}
-      </div>
-    )}
+        {/* Loading state */}
+        {loading && (
+          <div className="text-center py-8">
+            <Loader2
+              className="animate-spin mx-auto mb-4 text-blue-600"
+              size={48}
+            />
+            <p className="text-gray-600">
+              Analyzing your student data...
+            </p>
+          </div>
+        )}
 
-    {report && (
-      <div className="space-y-4">
-        <div className="prose max-w-none">
-          <div className="whitespace-pre-wrap text-gray-700">{report}</div>
-        </div>
-        <Button
-          variant="secondary"
-          onClick={generateReport}
-          className="flex items-center gap-2"
-        >
-          <Sparkles size={16} />
-          Regenerate Report
-        </Button>
-      </div>
-    )}
-  </CardContent>
-</Card>
-)}
+        {/* Error state */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
+        {/* Success state */}
+        {report && (
+          <div className="space-y-4">
+            <div className="prose max-w-none">
+              <div className="whitespace-pre-wrap text-gray-700">
+                {report}
+              </div>
+            </div>
+
+            <Button
+              variant="secondary"
+              onClick={generateReport}
+              className="flex items-center gap-2"
+            >
+              <Sparkles size={16} />
+              Regenerate Report
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
