@@ -1,10 +1,15 @@
 'use client'
 
+import { LogOut, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from './ui/Button'
-import { LogOut, User } from 'lucide-react'
 
-export function Navbar({ userName }: { userName: string }) {
+interface NavbarProps {
+  userName: string
+  userEmail?: string
+}
+
+export function Navbar({ userName, userEmail }: NavbarProps) {
   const router = useRouter()
 
   const handleLogout = async () => {
@@ -22,7 +27,12 @@ export function Navbar({ userName }: { userName: string }) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Student Management</h1>
-            <p className="text-sm text-gray-600">Welcome, {userName}</p>
+            <p className="text-sm text-gray-600">
+              Welcome, {userName}
+              {userEmail && (
+                <span className="text-gray-400 ml-1">({userEmail})</span>
+              )}
+            </p>
           </div>
         </div>
         

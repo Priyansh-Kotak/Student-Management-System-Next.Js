@@ -13,3 +13,10 @@ export interface Student {
   notes?: string;
   status: "ACTIVE" | "INACTIVE" | "GRADUATED";
 }
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: 'USER' | 'ADMIN'
+}

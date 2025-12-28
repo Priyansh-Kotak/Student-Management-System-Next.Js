@@ -1,7 +1,45 @@
+'use client'
+
 import { BarChart, Shield, Users, Zap } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function HomePage() {
+  const router = useRouter()
+  const [isChecking, setIsChecking] = useState(true)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          // User is logged in, redirect to dashboard
+          router.push('/dashboard')
+        } else {
+          // User is not logged in, show home page
+          setIsChecking(false)
+        }
+      } catch (error) {
+        // Error checking auth, show home page
+        setIsChecking(false)
+      }
+    }
+    checkAuth()
+  }, [router])
+
+  // Show loading spinner while checking authentication
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       
@@ -108,8 +146,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 py-8 text-center text-gray-600">
           <p className="mb-2">
             Created by{' '}
-            <a
-              href="https://github.com/Priyansh-Kotak"
+            
+              <a href="https://github.com/Priyansh-Kotak"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline font-medium"
@@ -119,8 +157,8 @@ export default function HomePage() {
           </p>
 
           <div className="flex justify-center gap-4 text-sm">
-            <a
-              href="https://github.com/Priyansh-Kotak?tab=repositories"
+            
+              <a href="https://github.com/Priyansh-Kotak?tab=repositories"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-600"
@@ -128,8 +166,8 @@ export default function HomePage() {
               GitHub
             </a>
             <span className="text-gray-400">•</span>
-            <a
-              href="https://www.linkedin.com/in/priyanshkotak/"
+            
+              <a href="https://www.linkedin.com/in/priyanshkotak/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-600"

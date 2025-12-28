@@ -4,27 +4,39 @@ import { Navbar } from '@/components/Navbar'
 import { StudentCard } from '@/components/StudentCard'
 import { StudentForm } from '@/components/StudentForm'
 import { Button } from '@/components/ui/Button'
-import { Student } from '@/types/student'
+import { Student, User } from '@/types/student'
 import { Plus, Users } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-// interface Student {
-//   id: string
-//   [key: string]: unknown
-// }
-
 export default function DashboardPage() {
+  const router = useRouter()
   const [students, setStudents] = useState<Student[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | undefined>(undefined)
-  const [userName, setUserName] = useState('User')
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
+    fetchUser()
     fetchStudents()
-    // In a real app, you'd fetch the user's name from an API
-    // For now, we'll just use a placeholder
   }, [])
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch('/api/auth/me')
+      if (response.ok) {
+        const data = await response.json()
+        setUser(data)
+      } else {
+        // If unauthorized, redirect to login
+        router.push('/login')
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error)
+      router.push('/login')
+    }
+  }
 
   const fetchStudents = async () => {
     try {
@@ -70,9 +82,21 @@ export default function DashboardPage() {
     setEditingStudent(undefined)
   }
 
+  // Show loading while fetching user
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar userName={userName} />
+      <Navbar userName={user.name} userEmail={user.email} />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {!showForm ? (
